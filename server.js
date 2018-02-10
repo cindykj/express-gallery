@@ -1,7 +1,7 @@
 // Modules
 const express = require('express');
 const bodyParser = require('body-parser');
-const knex = require('./knex/knex.js')
+// const knex = require('./dbmigrat/knex.js')
 
 // Routes
 const galleryRoutes = require('./routes/gallery');
@@ -18,9 +18,10 @@ app.use(bodyParser.json());
 app.use('/gallery', galleryRoutes);
 
 
-app.get(`/`, (req, res) => {
-  res.send(`smoke test`)
-})
+// app.get(`/`, (req, res) => {
+//   console.log('smoke test');
+//   res.send(`smoke test`)
+// })
 
 app.listen(PORT, () => {
   console.log(`Server is now connected to ${PORT}`);
