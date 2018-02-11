@@ -1,0 +1,14 @@
+<h1>Photo Detail</h1>
+<div class="photograph">
+  <h1>Author Name: {{author}} </h1>
+    <img src="{{link}}" alt="PHOTO HERE" width="500" height="377">
+  <p>Description: {{description}} </p>
+
+  <a href="/gallery/{{id}}/edit">
+    <button>Edit</button>
+  </a>
+  
+  <form action="/gallery/{{id}}?_method=DELETE" method="post">
+    <button>Delete</button>
+  </form>
+</div>

@@ -1,0 +1,22 @@
+<h1>_ARCHITEKT</h1>
+
+  {{!-- <a href="/gallery/{{id}}/edit"> --}}
+    <button>Edit</button>
+  {{!-- </a> --}}
+
+  {{!-- <form action="/gallery/{{id}}?_method=DELETE" method="post"> --}}
+    <button>Delete</button>
+  {{!-- </form> --}}
+
+{{#each photo}}
+<div class="photo">
+
+  <h1>Author Name: {{author}} </h1>
+  <a href="/gallery/{{id}}">
+    <img src="{{link}}" alt="PHOTO HERE" width="500" height="377">
+  </a>
+  <p>Description: {{description}} </p>
+
+</div>
+
+{{/each}}

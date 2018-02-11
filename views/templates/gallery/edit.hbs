@@ -1,0 +1,13 @@
+<h1>Edit Photo</h1>
+<form action="/gallery/{{id}}?_method=PUT" method="post">
+  <label for="author">Author: </label>
+  <input id="author" type="text" name="author"> {{#if author}}
+  <div>{{author}}</div>
+  {{/if}}
+
+  <label for="link">URL Link: </label>
+  <input id="link" type="text" name="link">
+  <label for="description">Description: </label>
+  <input id="description" type="text" name="description">
+  <button type="Submit">Submit</button>
+</form>
