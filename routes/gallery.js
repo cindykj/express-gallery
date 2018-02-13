@@ -1,7 +1,9 @@
 const express = require('express');
 const Gallery = require('../db/models/Gallery');
+const User = require('../db/models/User')
 const bodyparser = require('body-parser');
 const methodOverride = require('method-override');
+
 
 const knex = require('../db/knex.js');
 
@@ -38,19 +40,21 @@ router.route('/')
       })
   }) // closing for get
   .post((req, res) => {
-    console.log('cheehoo')
+    // console.log(req.body)
       let {
+        // add id here eventually
         author,
         link,
         description
       } = req.body;
-      if (!author || !link || !description) {
+      if (!author || !link || !description) { //add id here eventually
         // console.log(author, link, description);
         return res.status(400).json({
           message: `Must enter values in all fields`
         });
       }
       return new Gallery({
+          id,
           author,
           link,
           description
@@ -134,6 +138,12 @@ router.route('/:id')
       .then(result => {
         return res.redirect(`/gallery/${req.params.id}`);
       })
+      .catch(err => {
+        return res.json({
+          message: err.message,
+          code: err.code
+        })
+      })
   }) //closing for put
   // DELETE /gallery/:id
   .delete((req, res) => {
@@ -151,7 +161,7 @@ router.route('/:id')
           code: err.code
         })
       })
-  }) //closing for delete
+  }); //closing for delete
 
 
 module.exports = router;

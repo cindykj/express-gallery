@@ -3,16 +3,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
 const methodOverride = require('method-override');
-
 const path = require('path');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const Redis = require('connect-redis')(session);
 
 // Routes
 const knex = require('./db/knex.js')
 const galleryRoutes = require('./routes/gallery');
+const registerRoutes = require('./routes/register')
+
 
 // Port
+const saltRounds = 12;
 const PORT = process.env.PORT || 3000;
-
 const app = express();
 
 // Static public
@@ -24,15 +30,106 @@ app.set('view engine', '.hbs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
-
+app.use(session({
+  store: new Redis(),
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false
+}));
 
 app.use('/gallery', galleryRoutes);
+app.use('/register', registerRoutes);
 
 
-// app.get(`/`, (req, res) => {
-//   console.log('smoke test');
-//   res.send(`smoke test`)
-// })
+//PASSPORT STUFF
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  console.log('serializing');
+  return done(null, {
+    id: user.id,
+    username: user.username
+  });
+});
+
+passport.deserializeUser((user, done) => {
+  console.log('deserializing');
+  new User ({ id: user.id }).fetch() // db.users.findOne({ where: { id: user.id}})
+    .then(user => {
+      return done(null, {
+        id: user.id,
+        username: user.username
+      });
+    });
+});
+
+passport.use(new LocalStrategy(function(username, password, done) { //grabbing username
+  User({ username: username }).fetch() //use username to find username by username
+  .then ( user => {
+    if (user === null) {
+      return done(null, false, {message: 'bad username or password'}); //first param = , second param = truthy or false, second is message of why that error is; username didn't match!
+    }
+    else {
+      bcrypt.compare(password, user.password) //use bcrypt to compare; first password is input, user.password is stored in DB; 
+      .then(res => {
+        if (res) { return done(null, user); } //if true, then they match
+        else {
+          return done(null, false, {message: 'bad username or password'}); //sending error bc password didn't match!
+        }
+      });
+    }
+  })
+  .catch(err => { console.log('error: ', err); });
+}));
+
+//smoke test
+app.get(`/`, (req, res) => {
+  console.log('smoke test');
+  res.send(`smoke test`)
+})
+
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/secret',
+  failureRedirect: '/'
+}));
+
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.sendStatus(200);
+});
+
+// app.post('/register', (req, res) => {
+//   bcrypt.genSalt(saltRounds, function(err, salt) {
+//     if (err) { console.log(err); }
+//     bcrypt.hash(req.body.password, salt, function(err, hash) {
+//       if (err) { console.log(err); }
+//       new User({
+//         username: req.body.username,
+//         password: hash
+//       })
+//       .save()
+//       .then( (user) => {
+//         console.log(user);
+//         res.redirect('/');
+//       })
+//       .catch((err) => { console.log(err); return res.send('Stupid username'); });
+//     });
+//   });
+// });
+
+function isAuthenticated (req, res, next) {
+  if(req.isAuthenticated()) { next();}
+  else { res.redirect('/'); }
+}
+
+app.get('/secret', isAuthenticated, (req, res) => {
+  console.log('req.user: ', req.user);
+  console.log('req.user id', req.user.id);
+  console.log('req.username', req.user.username);
+  res.send('you found the secret!');
+});
+
 
 app.listen(PORT, (err) => {
   if (err) {
