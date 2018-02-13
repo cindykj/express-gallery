@@ -36,45 +36,47 @@ router.route('/')
           message: err.message
         });
       })
-  }); // closing for get
-
-// GET /gallery/new to see a "new photo" form (fields: author, link, description)
-router.route('/new')
-  .get((req, res) => {
-    return res.render('templates/gallery/new');
-  });
-
-// POST /gallery to create a new gallery photo
-router.route('/new')
+  }) // closing for get
   .post((req, res) => {
-    let {
-      author,
-      link,
-      description
-    } = req.body;
-    if (!author || !link || !description) {
-      console.log(author, link, description);
-      return res.status(400).json({
-        message: `Must enter values in all fields`
-      });
-    }
-    return new Gallery({
+    console.log('cheehoo')
+      let {
         author,
         link,
         description
-      })
-      .save()
-      .then(post => {
-        return res.redirect('/gallery');
-      })
-      .catch(err => {
-        return res.json({
-          message: err.message,
-          code: err.code
+      } = req.body;
+      if (!author || !link || !description) {
+        // console.log(author, link, description);
+        return res.status(400).json({
+          message: `Must enter values in all fields`
+        });
+      }
+      return new Gallery({
+          author,
+          link,
+          description
         })
-      })
+        .save()
+        .then(post => {
+          console.log('POSTING', post)
+          return res.redirect('/gallery');
+        })
+        .catch(err => {
+          return res.json({
+            message: err.message,
+            code: err.code
+          })
+        })
+    }); // closing for post /gallery  
 
-  }) // closing for post /gallery  
+// GET /gallery/new to see a "new photo" form (fields: author, link, description)
+
+
+// POST /gallery to create a new gallery photo
+router.route('/new')
+.get((req, res) => {
+  return res.render('templates/gallery/new');
+})
+
 
 //  GET /gallery/:id to see a single gallery photo
 router.route('/:id')
@@ -101,7 +103,6 @@ router.route('/:id')
         })
       })
   }); //closing for get gallery/:id
-
 
 
 // GET /gallery/id:edit to see a form to edit a gallery photo identified by the :id param (form fields)

@@ -1,22 +1,33 @@
-<h1>_ARCHITEKT</h1>
-
+<div id="header">
+      <h1>_ARCHITEKT</h1>
+      <div class="header_text_cont">
+        Welcome to our online portfolio, we are small group of passionate designers and architects, looking to change and create amazing digital images to inspire others to follow in our innovative steps. Free Architect WordPress Theme
+        </div>
+      {{!-- <div class="clear"></div> --}}
+    </div>
   {{!-- <a href="/gallery/{{id}}/edit"> --}}
-    <button>Edit</button>
+    {{!-- <button>Edit</button> --}}
   {{!-- </a> --}}
 
   {{!-- <form action="/gallery/{{id}}?_method=DELETE" method="post"> --}}
-    <button>Delete</button>
+    {{!-- <button>Delete</button> --}}
   {{!-- </form> --}}
-
+<div id="main_container">
+  <div id="outside_container">
+    
 {{#each photo}}
 <div class="photo">
-
-  <h1>Author Name: {{author}} </h1>
   <a href="/gallery/{{id}}">
-    <img src="{{link}}" alt="PHOTO HERE" width="500" height="377">
+    <img src="{{link}}" alt="PHOTO HERE">
   </a>
-  <p>Description: {{description}} </p>
-
+  <h3>
+    <a href="/gallery/{{id}}">
+      {{author}}
+    </a>
+  </h3>
+  <h3>{{description}} </h3>
 </div>
-
 {{/each}}
+
+  </div>
+</div> {{!closing main container }}
