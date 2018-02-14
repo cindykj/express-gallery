@@ -13,7 +13,8 @@ const Redis = require('connect-redis')(session);
 // Routes
 const knex = require('./db/knex.js')
 const galleryRoutes = require('./routes/gallery');
-const registerRoutes = require('./routes/register')
+const registerRoutes = require('./routes/register');
+const User = require('./db/models/User');
 
 
 // Port
@@ -30,9 +31,9 @@ app.set('view engine', '.hbs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
-app.use(session({
+app.use(session({ 
   store: new Redis(),
-  secret: 'keyboard cat',
+  secret: 'keyboard cat', //secret is session's way of salting
   resave: false,
   saveUninitialized: false
 }));
@@ -65,8 +66,14 @@ passport.deserializeUser((user, done) => {
 });
 
 passport.use(new LocalStrategy(function(username, password, done) { //grabbing username
-  User({ username: username }).fetch() //use username to find username by username
+  console.log('client-side username', username);
+  console.log('client-side password', password);
+  
+  return new User({ username: username }).fetch() //use username to find username by username
+  
   .then ( user => {
+    console.log('user', user);
+    user = user.toJSON();
     if (user === null) {
       return done(null, false, {message: 'bad username or password'}); //first param = , second param = truthy or false, second is message of why that error is; username didn't match!
     }
@@ -75,6 +82,7 @@ passport.use(new LocalStrategy(function(username, password, done) { //grabbing u
       .then(res => {
         if (res) { return done(null, user); } //if true, then they match
         else {
+
           return done(null, false, {message: 'bad username or password'}); //sending error bc password didn't match!
         }
       });
@@ -89,34 +97,27 @@ app.get(`/`, (req, res) => {
   res.send(`smoke test`)
 })
 
+
+//LOGIN ACTIVITIES: ROUTES, I 
 app.post('/login', passport.authenticate('local', {
-  successRedirect: '/secret',
-  failureRedirect: '/'
+  successRedirect: '/gallery', //success works!
+  failureRedirect: '/login' //fail works
 }));
+
+app.get('/login', (req, res) => {
+  console.log('req.body', req.body);
+  return res.render('./templates/gallery/login')
+});
+
 
 app.get('/logout', (req, res) => {
   req.logout();
   res.sendStatus(200);
 });
 
-// app.post('/register', (req, res) => {
-//   bcrypt.genSalt(saltRounds, function(err, salt) {
-//     if (err) { console.log(err); }
-//     bcrypt.hash(req.body.password, salt, function(err, hash) {
-//       if (err) { console.log(err); }
-//       new User({
-//         username: req.body.username,
-//         password: hash
-//       })
-//       .save()
-//       .then( (user) => {
-//         console.log(user);
-//         res.redirect('/');
-//       })
-//       .catch((err) => { console.log(err); return res.send('Stupid username'); });
-//     });
-//   });
-// });
+
+
+
 
 function isAuthenticated (req, res, next) {
   if(req.isAuthenticated()) { next();}

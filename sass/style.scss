@@ -7,28 +7,58 @@ body {
 h1 {
   font-size: 60px;
   color: rgb(104, 102, 102);
+  text-transform: uppercase;
+
+}
+
+
+
+#header {
+  display: flex;
+}
+.header_text_cont {
+  justify-content: space-around;
+  align-items: center;
+  margin: auto;
+  padding: 10px;
+  border-left: 1px solid #ddd;
+  width: 275px;
+}
+
+#menu_container {
+  display: inline-block;
+  text-decoration: none;
+  
 }
 
 a {
   text-decoration: none;
+  font-size: 16px;
+  color: rgb(95, 95, 95);
+  
 }
+li {
+  display: inline-flex;
+  text-decoration: none;
+  // text-align: center;
 
-.header_text_cont {
-  float: right;
-      padding: 0 25px 0 15px;
-      margin: 10px 0;
-      border-left: 1px solid #ddd;
-      width: 275px;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: fit-content;
+  cursor: pointer;
 }
 
 #main_container {
+  display: flex;
   border: 1px solid red;
-  padding: 10px 0;
+  // padding: 10px 0;
   border-bottom: 1px solid #E5E5E5;
   position: relative;
   width: 960px;
   margin: auto;
 }
+
+
 //display page
 
 // main container

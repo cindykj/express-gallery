@@ -4,7 +4,6 @@ const User = require('../db/models/User')
 const bodyparser = require('body-parser');
 const methodOverride = require('method-override');
 
-
 const knex = require('../db/knex.js');
 
 const router = express.Router();
