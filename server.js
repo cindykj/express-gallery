@@ -15,6 +15,7 @@ const knex = require('./db/knex.js')
 const galleryRoutes = require('./routes/gallery');
 const registerRoutes = require('./routes/register');
 const User = require('./db/models/User');
+const isAuthenticated = require('./routes/helpers');
 
 
 // Port
@@ -38,7 +39,6 @@ app.use(session({
   saveUninitialized: false
 }));
 
-app.use('/gallery', galleryRoutes);
 app.use('/register', registerRoutes);
 
 
@@ -57,12 +57,12 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   console.log('deserializing');
   new User ({ id: user.id }).fetch() // db.users.findOne({ where: { id: user.id}})
-    .then(user => {
-      return done(null, {
-        id: user.id,
-        username: user.username
-      });
+  .then(user => {
+    return done(null, {
+      id: user.id,
+      username: user.username
     });
+  });
 });
 
 passport.use(new LocalStrategy(function(username, password, done) { //grabbing username
@@ -82,7 +82,7 @@ passport.use(new LocalStrategy(function(username, password, done) { //grabbing u
       .then(res => {
         if (res) { return done(null, user); } //if true, then they match
         else {
-
+          
           return done(null, false, {message: 'bad username or password'}); //sending error bc password didn't match!
         }
       });
@@ -105,10 +105,8 @@ app.post('/login', passport.authenticate('local', {
 }));
 
 app.get('/login', (req, res) => {
-  console.log('req.body', req.body);
   return res.render('./templates/gallery/login')
 });
-
 
 app.get('/logout', (req, res) => {
   req.logout();
@@ -116,22 +114,20 @@ app.get('/logout', (req, res) => {
 });
 
 
-
-
-
-function isAuthenticated (req, res, next) {
-  if(req.isAuthenticated()) { next();}
-  else { res.redirect('/'); }
-}
-
-app.get('/secret', isAuthenticated, (req, res) => {
-  console.log('req.user: ', req.user);
-  console.log('req.user id', req.user.id);
-  console.log('req.username', req.user.username);
-  res.send('you found the secret!');
-});
-
-
+// function isAuthenticated (req, res, next) {
+  //   if(req.isAuthenticated()) { next();}
+  //   else { res.redirect('/'); }
+  // }
+  
+  app.get('/secret', isAuthenticated, (req, res) => {
+    console.log('req.user: ', req.user);
+    console.log('req.user id', req.user.id);
+    console.log('req.username', req.user.username);
+    res.send('you found the secret!');
+  });
+  
+  app.use('/gallery', galleryRoutes);
+  
 app.listen(PORT, (err) => {
   if (err) {
     console.log(err.message);

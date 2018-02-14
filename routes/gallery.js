@@ -5,6 +5,7 @@ const bodyparser = require('body-parser');
 const methodOverride = require('method-override');
 
 const knex = require('../db/knex.js');
+const isAuthenticated = require('./helpers');
 
 const router = express.Router();
 
@@ -38,26 +39,23 @@ router.route('/')
         });
       })
   }) // closing for get
-  .post((req, res) => {
-    // console.log(req.body)
-      let {
+  .post(isAuthenticated, (req, res) => {
+
+      let data = {
         // add id here eventually
         author,
         link,
         description
       } = req.body;
+      data.user_id = req.user.id
+      console.log('data.user.id', data.user_id)
       if (!author || !link || !description) { //add id here eventually
         // console.log(author, link, description);
         return res.status(400).json({
           message: `Must enter values in all fields`
         });
       }
-      return new Gallery({
-          id,
-          author,
-          link,
-          description
-        })
+      return new Gallery(data)
         .save()
         .then(post => {
           console.log('POSTING', post)

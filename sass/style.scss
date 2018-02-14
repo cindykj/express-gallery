@@ -28,17 +28,23 @@ h1 {
 #menu_container {
   display: inline-block;
   text-decoration: none;
+  width: 100%;
   
 }
 
 a {
+  border: 1px solid purple;
   text-decoration: none;
   font-size: 16px;
   color: rgb(95, 95, 95);
+  // justify-content: space-between;
   
 }
 li {
+  border: 1x solid black;
+  padding: 5px;
   display: inline-flex;
+  justify-content: space-between;  
   text-decoration: none;
   // text-align: center;
 
@@ -49,7 +55,7 @@ li {
 }
 
 #main_container {
-  display: flex;
+  // display: flex;
   border: 1px solid red;
   // padding: 10px 0;
   border-bottom: 1px solid #E5E5E5;

@@ -16,8 +16,20 @@
   <li id="register" class="register">
     <a href="/register">REGISTER</a>
   </li>
+
+    <li id="New" class="login">
+    <a href="/gallery/new">NEW</a>
+  </li>
+
+
   <li id="login" class="login">
     <a href="/login">LOGIN</a>
+  </li>
+
+    <li id="logout" class="logout">
+      <form action="/gallery/{{user}}?_method=DELETE" method="post">
+        <a href="/login">LOGOUT</a>
+      </form>
   </li>
  
 
